@@ -230,7 +230,7 @@ constexpr void for_each_field(T&& value, F&& func) {
             constexpr std::size_t fields_count_val_in_lambda
                 = boost::pfr::detail::fields_count<std::remove_reference_t<T>>();
 
-            ::boost::pfr::detail::for_each_field_impl(
+            ::boost::pfr::detail::for_each_field_impl<std::remove_reference_t<T>>(
                 t,
                 std::forward<F>(f),
                 detail::make_index_sequence<fields_count_val_in_lambda>{},
