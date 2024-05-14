@@ -6,6 +6,8 @@
 #include <boost/pfr/core.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <sstream>
+#include <map>
+#include <string>
 
 // Test case was inspired by Bruno Dutra. Thanks!
 
@@ -72,6 +74,11 @@ static_assert(3 == get_field_count_through_for_each_field());
 
 #endif
 
+struct SimpleStruct {
+    char c;
+    std::string str;
+};
+
 int main () {
     std::size_t control = 0;
 
@@ -132,6 +139,36 @@ int main () {
     });
     BOOST_TEST_EQ("", ss.str());
     ss.str("");
+
+    // with name
+    {
+        std::map<std::string, std::string> m;
+        auto fill = [&m](std::string_view name, const auto& value){
+            m[std::string(name)] = value;
+        };
+
+        boost::pfr::for_each_field(SimpleStruct{ 'e', "test"}, fill);
+        BOOST_TEST_EQ(m.size(), 2);
+        BOOST_TEST_EQ(m["c"], "e");
+        BOOST_TEST_EQ(m["str"], "test");
+    }
+
+    {
+        std::map<std::string, std::string> m;
+        std::map<std::string, std::size_t> mi;
+        auto fill = [&m, &mi](std::string_view name, const auto& value, std::size_t i){
+            m[std::string(name)] = value;
+            mi[std::string(name)] = i;
+        };
+
+        boost::pfr::for_each_field(SimpleStruct{ 'e', "test"}, fill);
+        BOOST_TEST_EQ(m.size(), 2);
+        BOOST_TEST_EQ(m["c"], "e");
+        BOOST_TEST_EQ(m["str"], "test");
+        BOOST_TEST_EQ(mi.size(), 2);
+        BOOST_TEST_EQ(mi["c"], 0);
+        BOOST_TEST_EQ(mi["str"], 1);
+    }
 
     return boost::report_errors();
 }
