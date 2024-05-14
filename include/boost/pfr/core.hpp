@@ -206,9 +206,12 @@ constexpr auto structure_tie(T&&, std::enable_if_t< std::is_rvalue_reference<T&&
 /// Calls `func` for each field of a `value`.
 ///
 /// \param func must have one of the following signatures:
-///     * any_return_type func(U&& field)                // field of value is perfect forwarded to function
+///     * any_return_type func(U&& field)                                       // field of value is perfect forwarded to function
 ///     * any_return_type func(U&& field, std::size_t i)
-///     * any_return_type func(U&& value, I i)           // Here I is an `std::integral_constant<size_t, field_index>`
+///     * any_return_type func(U&& value, I i)                                 // Here I is an `std::integral_constant<size_t, field_index>`
+///     * any_return_type func(std::string_view name, U&& field)               // field of value is perfect forwarded to function
+///     * any_return_type func(std::string_view name, U&& field, std::size_t i)
+///     * any_return_type func(std::string_view name, U&& value, I i)           // Here I is an `std::integral_constant<size_t, field_index>`
 ///
 /// \param value To each field of this variable will be the `func` applied.
 ///
@@ -217,6 +220,7 @@ constexpr auto structure_tie(T&&, std::enable_if_t< std::is_rvalue_reference<T&&
 ///     struct my_struct { int i, short s; };
 ///     int sum = 0;
 ///     boost::pfr::for_each_field(my_struct{20, 22}, [&sum](const auto& field) { sum += field; });
+///     boost::pfr::for_each_field(my_struct{20, 22}, [&sum](std::string_view name, const auto& field) { std::cout << name << "=" << field << std::endl; });
 ///     assert(sum == 42);
 /// \endcode
 template <class T, class F>
