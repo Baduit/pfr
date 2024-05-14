@@ -30,7 +30,7 @@ constexpr void for_each_field_impl_apply(T&& v, F&& f, I /*i*/, int) {
     std::forward<F>(f)(std::forward<T>(v));
 }
 
-#if BOOST_PFR_CORE_NAME_ENABLED
+#if BOOST_PFR_CORE_NAME_ENABLED && defined(__cpp_concepts) && __cpp_concepts >= 202002L
 
 template <typename T, typename F>
 concept WithNameAndIndex = requires(T value, F f, std::string_view name, std::integral_constant<std::size_t, 0> i)
@@ -54,7 +54,7 @@ constexpr void for_each_field_with_name_impl_apply(std::string_view name, T&& v,
     std::forward<F>(f)(name, std::forward<T>(v));
 }
 
-#endif // BOOST_PFR_CORE_NAME_ENABLED
+#endif // BOOST_PFR_CORE_NAME_ENABLED && defined(__cpp_concepts) && __cpp_concepts >= 202002L
 
 #if !defined(__cpp_fold_expressions) || __cpp_fold_expressions < 201603
 template <class T, class F, std::size_t... I>
@@ -80,7 +80,7 @@ constexpr void for_each_field_impl(T& t, F&& f, std::index_sequence<I...>, std::
 
 template <class A, class T, class F, std::size_t... I>
 constexpr void for_each_field_impl(T& t, F&& f, std::index_sequence<I...>, std::false_type /*move_values*/) {
-    #if BOOST_PFR_CORE_NAME_ENABLED
+    #if BOOST_PFR_CORE_NAME_ENABLED && defined(__cpp_concepts) && __cpp_concepts >= 202002L
      using FirstElemType = sequence_tuple::tuple_element<0, T>::type;
      if constexpr (WithNameOnly<FirstElemType, F>)
      {
@@ -91,7 +91,7 @@ constexpr void for_each_field_impl(T& t, F&& f, std::index_sequence<I...>, std::
         (detail::for_each_field_with_name_impl_apply(detail::get_name<A, I>(), sequence_tuple::get<I>(t), std::forward<F>(f), size_t_<I>{}), ...);
      }
      else
-    #endif // BOOST_PFR_CORE_NAME_ENABLED
+    #endif // BOOST_PFR_CORE_NAME_ENABLED && defined(__cpp_concepts) && __cpp_concepts >= 202002L
      {
         (detail::for_each_field_impl_apply(sequence_tuple::get<I>(t), std::forward<F>(f), size_t_<I>{}, 1L), ...);
      }
@@ -99,7 +99,7 @@ constexpr void for_each_field_impl(T& t, F&& f, std::index_sequence<I...>, std::
 
 template <class A, class T, class F, std::size_t... I>
 constexpr void for_each_field_impl(T& t, F&& f, std::index_sequence<I...>, std::true_type /*move_values*/) {
-    #if BOOST_PFR_CORE_NAME_ENABLED
+    #if BOOST_PFR_CORE_NAME_ENABLED && defined(__cpp_concepts) && __cpp_concepts >= 202002L
      using FirstElemType = sequence_tuple::tuple_element<0, T>::type;
      if constexpr (WithNameOnly<FirstElemType, F>)
      {
@@ -110,7 +110,7 @@ constexpr void for_each_field_impl(T& t, F&& f, std::index_sequence<I...>, std::
         (detail::for_each_field_with_name_impl_apply(detail::get_name<A, I>(), sequence_tuple::get<I>(std::move(t)), std::forward<F>(f), size_t_<I>{}), ...);
      }
      else
-    #endif // BOOST_PFR_CORE_NAME_ENABLED
+    #endif // BOOST_PFR_CORE_NAME_ENABLED && defined(__cpp_concepts) && __cpp_concepts >= 202002L
      {
         (detail::for_each_field_impl_apply(sequence_tuple::get<I>(std::move(t)), std::forward<F>(f), size_t_<I>{}, 1L), ...);
      }

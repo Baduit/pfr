@@ -153,6 +153,7 @@ int main () {
         BOOST_TEST_EQ(m["str"], "test");
     }
 
+#if BOOST_PFR_CORE_NAME_ENABLED && defined(__cpp_concepts) && __cpp_concepts >= 202002L
     {
         std::map<std::string, std::string> m;
         std::map<std::string, std::size_t> mi;
@@ -169,6 +170,7 @@ int main () {
         BOOST_TEST_EQ(mi["c"], 0);
         BOOST_TEST_EQ(mi["str"], 1);
     }
+#endif // BOOST_PFR_CORE_NAME_ENABLED && defined(__cpp_concepts) && __cpp_concepts >= 202002L
 
     return boost::report_errors();
 }
